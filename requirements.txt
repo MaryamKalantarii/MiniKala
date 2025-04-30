@@ -1,0 +1,6 @@
+asgiref==3.8.1
+Django==5.2
+django-filter==25.1
+djangorestframework==3.16.0
+Markdown==3.8
+sqlparse==0.5.3
