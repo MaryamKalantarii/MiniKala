@@ -1,0 +1,2 @@
+# MiniKala
+ 🛍️ MiniKala — Simple & Flexible E-commerce Backend  MiniKala is a minimal yet scalable e-commerce backend project built with Django and Django REST Framework. It is designed as a lightweight online store system, focusing on clean API design, easy product management, and extendability.  This project serves as a base for online shops that want to start small and grow over time, making it perfect for learning, prototyping, or launching a simple MVP.
