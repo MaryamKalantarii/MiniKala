@@ -8,6 +8,8 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ["id", "title","slug"]
 
 class ProductSerializer(serializers.ModelSerializer):
+    category = serializers.SerializerMethodField()
+    detail_link = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductModel
@@ -26,14 +28,17 @@ class ProductSerializer(serializers.ModelSerializer):
             'avg_rate',
             'created_date',
             'updated_date',
-            
             'is_discounted',
             'is_published',
+            'detail_link',  # 🔗 این خط
         ]
         read_only_fields = ['created_date', 'updated_date', 'avg_rate']
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['category'] = CategorySerializer(instance.category, many=True).data
-        return rep
-        
 
+    def get_category(self, obj):
+        return CategorySerializer(obj.category.all(), many=True).data
+
+    def get_detail_link(self, obj):
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(f'/api/V1/products/{obj.slug}/')
+        return None
