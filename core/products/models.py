@@ -25,7 +25,7 @@ class ProductCategoryModel(models.Model):
 
 # Create your models here.
 class ProductModel(models.Model):
-    # user = models.ForeignKey("accounts.User",on_delete=models.PROTECT)
+    user = models.ForeignKey("accounts.CustomeUser",on_delete=models.PROTECT)
     category = models.ManyToManyField(ProductCategoryModel)
     title = models.CharField(max_length=255)
     slug = models.SlugField(allow_unicode=True,unique=True)
