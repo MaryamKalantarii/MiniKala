@@ -26,7 +26,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'avg_rate',
             'created_date',
             'updated_date',
-            'final_price',
+            
             'is_discounted',
             'is_published',
         ]

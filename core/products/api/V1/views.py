@@ -5,7 +5,7 @@ from ...models import ProductModel,ProductCategoryModel,ProductStatusType
 
 class ProductView(viewsets.ModelViewSet):
 
-    class_serializer = ProductSerializer
+    serializer_class = ProductSerializer
     queryset = ProductModel.objects.filter(
         status=ProductStatusType.publish.value)
     
