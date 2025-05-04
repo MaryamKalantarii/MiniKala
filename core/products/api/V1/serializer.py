@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from ...models import ProductModel,ProductCategoryModel
+from accounts.api.V1.serializer import UserMiniSerializer
+
 
 class CategorySerializer(serializers.ModelSerializer):
 
@@ -8,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ["id", "title","slug"]
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = serializers.SerializerMethodField()
+    
     detail_link = serializers.SerializerMethodField()
 
     class Meta:
@@ -30,15 +32,19 @@ class ProductSerializer(serializers.ModelSerializer):
             'updated_date',
             'is_discounted',
             'is_published',
-            'detail_link',  # 🔗 این خط
+            'detail_link',  
         ]
-        read_only_fields = ['created_date', 'updated_date', 'avg_rate']
+        read_only_fields = ['created_date', 'updated_date', 'avg_rate','user']
 
-    def get_category(self, obj):
-        return CategorySerializer(obj.category.all(), many=True).data
-
+   
     def get_detail_link(self, obj):
         request = self.context.get('request')
         if request:
             return request.build_absolute_uri(f'/api/V1/products/{obj.slug}/')
         return None
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['user'] = UserMiniSerializer(instance.user).data
+        rep['category'] = CategorySerializer(instance.category.all(), many=True).data
+        return rep
