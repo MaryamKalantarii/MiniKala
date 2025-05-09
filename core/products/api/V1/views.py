@@ -1,5 +1,5 @@
 from rest_framework import viewsets,filters
-from .serializer import ProductSerializer,CategorySerializer
+from .serializers import ProductSerializer,CategorySerializer
 from ...models import ProductModel,ProductCategoryModel,ProductStatusType
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter,OrderingFilter
