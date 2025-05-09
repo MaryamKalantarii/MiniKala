@@ -39,11 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'products',
     'accounts',
+    'cart',
     'rest_framework',
     'django_filters',
     'drf_yasg',
 ]
-
+ 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
