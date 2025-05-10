@@ -12,3 +12,17 @@ services:
     environment:
       - SECRET_KEY=test
       - DEBUG=True
+    
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    restart: always
+    ports:
+      - '5000:80'
+      - '25:25'
+      - '143:143'
+    volumes:
+        - smtp4dev-data:/smtp4dev
+    environment:
+      - ServerOptions__HostName=smtp4dev
+volumes:
+  smtp4dev-data:
