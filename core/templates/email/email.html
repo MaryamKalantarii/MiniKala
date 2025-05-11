@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Your Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        p {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Welcome to MiniKala!</h2>
+    <p>Thank you for registering. Please verify your email address by clicking the button below:</p>
+    <a href="http://your-domain.com/verify/{{ token }}" class="btn">Verify Email</a>
+    <p>If you didn't sign up for an account, please ignore this email.</p>
+    <p>— MiniKala Team</p>
+</div>
+</body>
+</html>
