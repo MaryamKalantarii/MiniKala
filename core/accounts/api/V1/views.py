@@ -4,8 +4,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
-from .tasks import send_email_with_celery
+from accounts.api.V1.tasks import send_email_with_celery
 from accounts.models import CustomeUser
+from rest_framework_simplejwt.tokens import AccessToken
+
 
 class RegistrationView(GenericAPIView):
     """
@@ -29,7 +31,8 @@ class RegistrationView(GenericAPIView):
                 CustomeUser, email=serializer.validated_data["email"]
             )
             token = self.get_tokens_for_user(user)
-            send_email_with_celery.delay("email/email.html", token, "admin@hamid.com", [user.email])
+           
+            send_email_with_celery.delay("email/email.html", token, "maryam@admin.com", [user.email])
             
             return Response({"detail": "if email is on our database email sent for your verification...!"})
 
@@ -39,3 +42,20 @@ class RegistrationView(GenericAPIView):
 
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
+    
+class IsVerifiedView(GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            user_data = AccessToken(kwargs.get("token"))
+            user_id = user_data["user_id"]
+            user = get_object_or_404(CustomeUser, id=user_id)
+            user.is_verified = True
+            user.save()
+            return Response({"detail": "your account verified successfully"})
+        except:
+            return Response(
+                {
+                    "detail": "your token may be expired or changed structure...",
+                    "resend email": "http://127.0.0.1:8000/accounts/api/V1/resend",
+                }
+            )

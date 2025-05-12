@@ -1,47 +1,75 @@
+{% extends "mail_templated/base.tpl" %}
+
+{% block subject %}
+تایید ایمیل شما - حساب کاربری
+{% endblock %}
+
+{% block html %}
 <!DOCTYPE html>
-<html>
+<html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>Verify Your Email</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fafafa;
-            color: #333;
-            padding: 20px;
-        }
-        .container {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            max-width: 600px;
-            margin: auto;
-            padding: 30px;
-            border-radius: 8px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 12px 20px;
-            margin-top: 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        p {
-            line-height: 1.6;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      background-color: #f3f0f9;
+      font-family: 'Tahoma', sans-serif;
+      color: #333;
+      padding: 20px;
+    }
+    .container {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(128, 90, 213, 0.2);
+    }
+    .header {
+      text-align: center;
+      background-color: #805ad5;
+      color: white;
+      padding: 15px;
+      border-radius: 6px 6px 0 0;
+      font-size: 20px;
+    }
+    .content {
+      margin-top: 20px;
+      line-height: 1.8;
+    }
+    .btn {
+      display: inline-block;
+      background-color: #6b46c1;
+      color: white;
+      padding: 12px 20px;
+      margin-top: 25px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    <h2>Welcome to MiniKala!</h2>
-    <p>Thank you for registering. Please verify your email address by clicking the button below:</p>
-    <a href="http://your-domain.com/verify/{{ token }}" class="btn">Verify Email</a>
-    <p>If you didn't sign up for an account, please ignore this email.</p>
-    <p>— MiniKala Team</p>
-</div>
+  <div class="container">
+    <div class="header">
+      تایید ایمیل
+    </div>
+    <div class="content">
+      سلام عزیز،
+      <br><br>
+      لطفاً برای فعال‌سازی حساب کاربری خود روی دکمه زیر کلیک کنید:
+      <br>
+      <a href="http://127.0.0.1:8000/accounts/api/V1/is-verified/{{ token }}" class="btn">تایید ایمیل</a>
+    </div>
+    <div class="footer">
+      اگر شما این درخواست را ارسال نکرده‌اید، لطفاً این ایمیل را نادیده بگیرید.
+    </div>
+  </div>
 </body>
 </html>
+{% endblock %}
