@@ -11,5 +11,5 @@ class IsAdminAndVerifiedOrReadOnly(permissions.BasePermission):
         return (
             user.is_authenticated and 
             user.is_verified and
-            (user.type == 1 or user.type == 2) 
+            (user.type == 2 or user.type == 3) 
         )

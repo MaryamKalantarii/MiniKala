@@ -30,8 +30,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'avg_rate',
             'created_date',
             'updated_date',
-            'is_discounted',
             'is_published',
+            'status',
             'detail_link',  
         ]
         read_only_fields = ['created_date', 'updated_date', 'avg_rate','user']
