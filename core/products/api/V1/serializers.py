@@ -26,6 +26,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'brief_description',
             'stock',
             'price',
+            'get_price',
             'discount_percent',
             'avg_rate',
             'created_date',

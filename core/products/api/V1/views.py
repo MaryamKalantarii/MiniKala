@@ -4,7 +4,6 @@ from ...models import ProductModel,ProductCategoryModel,ProductStatusType
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter,OrderingFilter
 from .permisstions import IsAdminAndVerifiedOrReadOnly
-from rest_framework.permissions import IsAuthenticated
 
 class ProductView(viewsets.ModelViewSet):
     
@@ -17,6 +16,6 @@ class ProductView(viewsets.ModelViewSet):
     search_fields = ['description', 'category__title']
     ordering_fields = ['created_date', 'price']
     ordering = ['-created_date']
-
+    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
