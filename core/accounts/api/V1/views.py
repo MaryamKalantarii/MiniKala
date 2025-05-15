@@ -1,5 +1,5 @@
 from rest_framework.generics import GenericAPIView
-from .serializer import RegistrationSerializer,ResendEmailSerializer
+from .serializer import RegistrationSerializer,ResendEmailSerializer,ChangePasswordSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.api.V1.tasks import send_email_with_celery
 from accounts.models import CustomeUser
 from rest_framework_simplejwt.tokens import AccessToken
-
+from rest_framework.permissions import IsAuthenticated
 
 class RegistrationView(GenericAPIView):
     """
@@ -101,4 +101,39 @@ class ResendEmailView(GenericAPIView):
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
 
+
+
+
+class ChangePasswordView(GenericAPIView):
+    """
+    API endpoint that allows authenticated users to change their password.
+
+    Workflow:
+    - Accepts POST requests with 'old_password', 'new_password1', and 'new_password2' fields.
+    - Validates the request data via `PasswordChangeSerializer`:
+        - Checks if the old password is correct.
+        - Ensures the new passwords match.
+        - Validates the new password strength and complexity.
+    - Updates the user's password upon successful validation.
+    - Returns a confirmation message on success.
+
+    Important:
+    The view passes the current request to the serializer via the `context` argument
+    to allow access to the user instance inside the serializer. This is necessary
+    for verifying the old password and associating the password change with the correct user.
+
+    Permissions:
+    - Only authenticated users can access this endpoint.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()  # sets new password
+        return Response(
+            {"detail": "Password changed successfully."},
+            status=status.HTTP_200_OK
+        )
 

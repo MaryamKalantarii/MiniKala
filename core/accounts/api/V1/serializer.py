@@ -4,6 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from django.shortcuts import get_object_or_404
 
+
 class UserMiniSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -61,3 +62,62 @@ class ResendEmailSerializer(serializers.Serializer):
         user = get_object_or_404(CustomeUser, email=attrs.get("email"))
         attrs["user"] = user
         return attrs
+    
+
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer for changing user's password.
+
+    - Validates that new passwords match.
+    - Ensures the old password is correct.
+    - Checks password strength via Django's validators.
+    """
+
+    old_password = serializers.CharField(max_length=128, write_only=True)
+    new_password1 = serializers.CharField(max_length=128, write_only=True)
+    new_password2 = serializers.CharField(max_length=128, write_only=True)
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        user = request.user
+
+        old_pass = attrs.get("old_password")
+        new_pass1 = attrs.get("new_password1")
+        new_pass2 = attrs.get("new_password2")
+
+        if new_pass1 != new_pass2:
+            raise serializers.ValidationError(
+                {"new_password2": "New passwords do not match."}
+            )
+
+        if not user.check_password(old_pass):
+            raise serializers.ValidationError(
+                {"old_password": "Old password is incorrect."}
+            )
+
+        if old_pass == new_pass1:
+            raise serializers.ValidationError(
+                {"new_password1": "New password cannot be the same as the old password."}
+            )
+
+        # Validate password using Django's built-in validators
+        try:
+            validate_password(new_pass1, user)
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError(
+                {"new_password1": list(e.messages)}
+            )
+
+        return attrs
+
+    def save(self, **kwargs):
+        """
+        Sets the new password after all validations pass.
+        """
+        user = self.context["request"].user
+        new_password = self.validated_data["new_password1"]
+        user.set_password(new_password)
+        user.save()
+        return user
