@@ -2,7 +2,7 @@ from rest_framework import serializers
 from accounts.models import CustomeUser
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
-
+from django.shortcuts import get_object_or_404
 
 class UserMiniSerializer(serializers.ModelSerializer):
 
@@ -52,3 +52,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("password_confirm")
         return CustomeUser.objects.create_user(**validated_data)
+
+
+class ResendEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(label=("Email"), write_only=True)
+
+    def validate(self, attrs):
+        user = get_object_or_404(CustomeUser, email=attrs.get("email"))
+        attrs["user"] = user
+        return attrs

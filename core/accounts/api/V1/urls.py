@@ -1,5 +1,9 @@
 from django.urls import path
-from .views import RegistrationView,IsVerifiedView
+from .views import (
+    RegistrationView,
+    IsVerifiedView,
+    ResendEmailView,
+)
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -11,6 +15,7 @@ app_name='api-v1-accounts'
 urlpatterns = [
     path('registration/', RegistrationView.as_view(), name='registration'),
     path("is-verified/<str:token>", IsVerifiedView.as_view(), name="is-verified"),
+    path("resend/", ResendEmailView.as_view(), name="resend"),
     #simplejwt
     path('token/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
