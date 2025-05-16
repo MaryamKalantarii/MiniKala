@@ -3,6 +3,9 @@ from .views import (
     RegistrationView,
     IsVerifiedView,
     ResendEmailView,
+    PasswordResetRequestView,
+    PasswordResetConfirmView,
+
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -13,9 +16,13 @@ from rest_framework_simplejwt.views import (
 app_name='api-v1-accounts'
 
 urlpatterns = [
+    
     path('registration/', RegistrationView.as_view(), name='registration'),
     path("is-verified/<str:token>", IsVerifiedView.as_view(), name="is-verified"),
     path("resend/", ResendEmailView.as_view(), name="resend"),
+    path("reset-password/", PasswordResetRequestView.as_view(), name="reset-password"),
+    path("reset-password-confirm/<str:token>/", PasswordResetConfirmView.as_view(), name="reset-password-confirm"),
+
     #simplejwt
     path('token/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

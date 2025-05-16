@@ -1,5 +1,11 @@
 from rest_framework.generics import GenericAPIView
-from .serializer import RegistrationSerializer,ResendEmailSerializer,ChangePasswordSerializer
+from .serializer import (
+        RegistrationSerializer,
+        ResendEmailSerializer,
+        ChangePasswordSerializer,
+        PasswordResetConfirmSerializer,
+        PasswordResetRequestSerializer,
+)
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -137,3 +143,45 @@ class ChangePasswordView(GenericAPIView):
             status=status.HTTP_200_OK
         )
 
+
+
+class PasswordResetRequestView(GenericAPIView):
+    serializer_class = PasswordResetRequestSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"]
+        user = CustomeUser.objects.get(email=email)
+
+
+        token = RefreshToken.for_user(user).access_token
+
+        reset_url = f"http://127.0.0.1:8000/accounts/api/V1/reset-password-confirm/{token}/"
+
+        send_email_with_celery.delay(
+            "email/password_reset.html",
+            token=str(token),
+            from_email="admin@yourdomain.com",
+            recipient_list=[email],
+            extra_context={"reset_url": reset_url}
+        )
+
+        return Response({"detail": "Password reset email sent."})
+
+class PasswordResetConfirmView(GenericAPIView):
+    serializer_class = PasswordResetConfirmSerializer
+
+    def post(self, request, token):
+        try:
+            user_data = AccessToken(token)
+            user_id = user_data["user_id"]
+            user = CustomeUser.objects.get(id=user_id)
+        except Exception:
+            return Response({"detail": "Invalid or expired token."}, status=400)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user)
+
+        return Response({"detail": "Password reset successfully."})
