@@ -124,6 +124,13 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
+    """
+    Serializer for handling password reset requests.
+
+    - Accepts an email field.
+    - Validates whether the provided email belongs to a registered user.
+    - Raises a validation error if no user is found with the given email.
+    """
     email = serializers.EmailField()
 
     def validate_email(self, value):
@@ -133,6 +140,14 @@ class PasswordResetRequestSerializer(serializers.Serializer):
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
+    """
+    Serializer for confirming and saving a new password.
+
+    - Accepts two password fields: new_password1 and new_password2.
+    - Validates that both passwords match.
+    - Validates password strength using Django's built-in validators.
+    - Saves the new password for the given user instance.
+    """
     new_password1 = serializers.CharField(write_only=True)
     new_password2 = serializers.CharField(write_only=True)
 

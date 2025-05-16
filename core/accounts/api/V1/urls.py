@@ -19,7 +19,7 @@ app_name='api-v1-accounts'
 urlpatterns = [
 
     path('registration/', RegistrationView.as_view(), name='registration'),
-    path("is-verified/<str:token>", IsVerifiedView.as_view(), name="is-verified"),
+    path("is-verified/<str:token>/", IsVerifiedView.as_view(), name="is-verified"),
     path("resend/", ResendEmailView.as_view(), name="resend"),
     path("change-password/", ChangePasswordView.as_view(), name="change-password"),
     path("reset-password/", PasswordResetRequestView.as_view(), name="reset-password"),

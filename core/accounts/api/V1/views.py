@@ -38,8 +38,16 @@ class RegistrationView(GenericAPIView):
             )
             token = self.get_tokens_for_user(user)
            
-            send_email_with_celery.delay("email/email.html", token, "maryam@admin.com", [user.email])
             
+            verify_url = f"http://127.0.0.1:8000/accounts/api/V1/is-verified/{token}/"
+
+            send_email_with_celery.delay(
+                template="email/email_verification.html",
+                subject="Verify Your Account",
+                context={"verify_url": verify_url, "user": user.email},
+                from_email="maryam@admin.com",
+                recipient_list=[user.email]
+            )
             return Response({"detail": "Email sent. Please check your email."})
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -95,8 +103,17 @@ class ResendEmailView(GenericAPIView):
         if user.is_verified:
             return Response({"detail": "your email is already verified"})
         
+
         token = self.get_tokens_for_user(user)
-        send_email_with_celery.delay("email/email.html", token, "maryam@admin.com", [user.email])
+        verify_url = f"http://127.0.0.1:8000/accounts/api/V1/is-verified/{token}/"
+
+        send_email_with_celery.delay(
+                template="email/email_verification.html",
+                subject="Verify Your Account",
+                context={"verify_url": verify_url, "user": user.email},
+                from_email="maryam@admin.com",
+                recipient_list=[user.email]
+            )
             
         return Response({"detail": "Resend email...!"})
 
@@ -146,6 +163,23 @@ class ChangePasswordView(GenericAPIView):
 
 
 class PasswordResetRequestView(GenericAPIView):
+    """
+    Handles the password reset request.
+
+    - Accepts user's email via POST request.
+    - Validates if the email exists in the system.
+    - Generates a JWT token for the user.
+    - Constructs a password reset link containing the token.
+    - Sends the reset link via email asynchronously using Celery.
+    
+    Example usage:
+    POST /accounts/api/V1/reset-password/
+    {
+        "email": "user@example.com"
+    }
+
+    If the email is registered, the user will receive a password reset link.
+    """
     serializer_class = PasswordResetRequestSerializer
 
     def post(self, request):
@@ -160,16 +194,36 @@ class PasswordResetRequestView(GenericAPIView):
         reset_url = f"http://127.0.0.1:8000/accounts/api/V1/reset-password-confirm/{token}/"
 
         send_email_with_celery.delay(
-            "email/password_reset.html",
-            token=str(token),
-            from_email="admin@yourdomain.com",
-            recipient_list=[email],
-            extra_context={"reset_url": reset_url}
+            template="email/password_reset.html",
+            subject="Reset Your Password",
+            context={"reset_url": reset_url, "user": user.email},
+            from_email="maryam@admin.com",
+            recipient_list=[email]
         )
 
         return Response({"detail": "Password reset email sent."})
 
 class PasswordResetConfirmView(GenericAPIView):
+    """
+    Handles password reset confirmation using a JWT token.
+
+    - Accepts a POST request with a valid JWT token in the URL.
+    - Extracts the user from the token.
+    - Accepts and validates new password data from the request body.
+    - Updates the user's password if the token is valid and the input is valid.
+
+    Example endpoint:
+    POST /accounts/api/V1/reset-password-confirm/<token>/
+    
+    Request body:
+    {
+        "new_password1": "newstrongpass123",
+        "new_password2": "newstrongpass123"
+    }
+
+    Returns a success message upon successful password reset, or an error
+    if the token is invalid or expired.
+    """
     serializer_class = PasswordResetConfirmSerializer
 
     def post(self, request, token):
