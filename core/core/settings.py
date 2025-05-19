@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'products',
     'accounts',
     'cart',
+    'order',
     'rest_framework',
     'django_filters',
     'drf_yasg',
