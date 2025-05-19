@@ -48,7 +48,7 @@ class RegistrationView(GenericAPIView):
                 from_email="maryam@admin.com",
                 recipient_list=[user.email]
             )
-            return Response({"detail": "Email sent. Please check your email."})
+            return Response({"detail": "ایمیل ارسال شد. لطفا ایمیل خود را بررسی کنید."})
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -74,11 +74,11 @@ class IsVerifiedView(GenericAPIView):
             user = get_object_or_404(CustomeUser, id=user_id)
             user.is_verified = True
             user.save()
-            return Response({"detail": "your account verified successfully"})
+            return Response({"detail": "حساب شما با موفقیت تأیید شد"})
         except:
             return Response(
                 {
-                    "detail": "your token may be expired or changed structure...",
+                    "detail": "توکن شما ممکن است منقضی شده باشد یا ساختار آن تغییر کند...",
                     "resend email": "http://127.0.0.1:8000/accounts/api/V1/resend",
                 }
             )
@@ -101,7 +101,7 @@ class ResendEmailView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
         if user.is_verified:
-            return Response({"detail": "your email is already verified"})
+            return Response({"detail": "ایمیل شما قبلا تایید شده است"})
         
 
         token = self.get_tokens_for_user(user)
@@ -115,7 +115,7 @@ class ResendEmailView(GenericAPIView):
                 recipient_list=[user.email]
             )
             
-        return Response({"detail": "Resend email...!"})
+        return Response({"detail": "ارسال مجدد ایمیل...!"})
 
     def get_tokens_for_user(self, user):
         """
@@ -156,7 +156,7 @@ class ChangePasswordView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()  # sets new password
         return Response(
-            {"detail": "Password changed successfully."},
+            {"detail": "رمز عبور با موفقیت تغییر کرد."},
             status=status.HTTP_200_OK
         )
 
@@ -201,7 +201,7 @@ class PasswordResetRequestView(GenericAPIView):
             recipient_list=[email]
         )
 
-        return Response({"detail": "Password reset email sent."})
+        return Response({"detail": "لینک تغییر رمز عبور به ایمیل شما ارسال شد."})
 
 class PasswordResetConfirmView(GenericAPIView):
     """
@@ -232,10 +232,10 @@ class PasswordResetConfirmView(GenericAPIView):
             user_id = user_data["user_id"]
             user = CustomeUser.objects.get(id=user_id)
         except Exception:
-            return Response({"detail": "Invalid or expired token."}, status=400)
+            return Response({"detail": "توکن نامعتبر یا منقضی شده است."}, status=400)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)
 
-        return Response({"detail": "Password reset successfully."})
+        return Response({"detail": "رمز عبور با موفقیت بازنشانی شد."})

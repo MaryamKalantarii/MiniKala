@@ -41,7 +41,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         attrs = super().validate(attrs)
 
         if attrs.get("password") != attrs.get("password_confirm"):
-            raise serializers.ValidationError({"detail": "Passwords do not match"})
+            raise serializers.ValidationError({"detail": "گذرواژه ها مطابقت ندارند"})
 
         try:
             validate_password(attrs["password"])
@@ -153,7 +153,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if attrs["new_password1"] != attrs["new_password2"]:
-            raise serializers.ValidationError({"detail": "Passwords do not match."})
+            raise serializers.ValidationError({"detail": "گذرواژه ها مطابقت ندارند."})
         validate_password(attrs["new_password1"])
         return attrs
 
