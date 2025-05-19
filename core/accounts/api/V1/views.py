@@ -129,7 +129,7 @@ class ResendEmailView(GenericAPIView):
 
 class ChangePasswordView(GenericAPIView):
     """
-    API endpoint that allows authenticated users to change their password.
+    Handles API endpoint that allows authenticated users to change their password.
 
     Workflow:
     - Accepts POST requests with 'old_password', 'new_password1', and 'new_password2' fields.
