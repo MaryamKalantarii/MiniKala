@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth import get_user_model
+from .models import Profile
 
 CustomeUser = get_user_model()
 
@@ -65,9 +66,12 @@ class CustomUserAdmin(UserAdmin):
         ),
     )
 
+class CustomProfileAdmin(admin.ModelAdmin):
+    list_display = ("id","user", "first_name","last_name","phone_number")
+    searching_fields = ("user","first_name","last_name","phone_number")
 
 admin.site.register(CustomeUser, CustomUserAdmin)
-
+admin.site.register(Profile,CustomProfileAdmin)
 
 
 

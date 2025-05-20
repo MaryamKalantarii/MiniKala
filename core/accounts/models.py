@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
-
+from .validators import validate_iranian_cellphone_number
 
 class UserType(models.IntegerChoices):
     customer = 1, _("customer")
@@ -52,3 +52,18 @@ class CustomeUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+
+class Profile(models.Model):
+    user = models.OneToOneField(CustomeUser,on_delete=models.CASCADE ,related_name="user_profile")
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to="profile/",default="profile/default.png")
+    phone_number= models.CharField(max_length=20,validators=[validate_iranian_cellphone_number])
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def get_fullname(self):
+        if self.first_name or self.last_name:
+            return self.first_name + " " + self.last_name
+        return "کاربر جدید"
