@@ -2,10 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from dashboard.api.V1.permissions import IsCustomerUserType
 from rest_framework import generics, permissions
-from .serializers import CustomerProfileSerializer,OrderListSerializer, OrderDetailSerializer
+from .serializers import CustomerProfileSerializer, OrderDetailSerializer, OrderListSerializer, UserAddressSerializer
 from accounts.models import Profile
 from rest_framework import status
-from order.models import OrderModel
+from order.models import OrderModel, UserAddressModel
+from rest_framework import viewsets
 
 class CustomerDashboardView(APIView):
     permission_classes = [IsCustomerUserType]
@@ -47,3 +48,13 @@ class CustomerOrderDetailView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return OrderModel.objects.filter(user=self.request.user)
+
+class UserAddressViewSet(viewsets.ModelViewSet):
+    serializer_class = UserAddressSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return UserAddressModel.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

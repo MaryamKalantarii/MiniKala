@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from accounts.models import Profile
-from order.models import OrderModel, OrderItemModel
+from order.api.V1.serializers import OrderItemSerializer
+from order.models import OrderModel,UserAddressModel
 
 class CustomerProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,12 +9,6 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'phone_number','image']
 
 
-class OrderItemSerializer(serializers.ModelSerializer):
-    product_title = serializers.CharField(source='product.title', read_only=True)
-
-    class Meta:
-        model = OrderItemModel
-        fields = ['product_title', 'quantity', 'price']
 
 class OrderListSerializer(serializers.ModelSerializer):
     status_label = serializers.SerializerMethodField()
@@ -35,3 +30,8 @@ class OrderDetailSerializer(OrderListSerializer):
 
     class Meta(OrderListSerializer.Meta):
         fields = OrderListSerializer.Meta.fields + ['order_items']
+
+class UserAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAddressModel
+        fields = ['id', 'address', 'state', 'city', 'zip_code']
