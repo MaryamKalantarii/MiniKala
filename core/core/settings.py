@@ -41,13 +41,14 @@ INSTALLED_APPS = [
     'accounts',
     'cart',
     'order',
+    'dashboard',
     'rest_framework',
     'django_filters',
     'drf_yasg',
     'rest_framework_simplejwt',
     'mail_templated'
 ]
-
+   
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
