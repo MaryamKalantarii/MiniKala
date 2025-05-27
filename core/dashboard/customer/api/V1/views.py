@@ -31,8 +31,6 @@ class CustomerProfileView(generics.RetrieveUpdateAPIView):
             "data": response.data
         }, status=status.HTTP_200_OK)
     
-# dashboard/customer/api/V1/views/order_views.py
-
 
 class CustomerOrderListView(generics.ListAPIView):
     serializer_class = OrderListSerializer
