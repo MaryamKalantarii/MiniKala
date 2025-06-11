@@ -4,7 +4,7 @@ import random
 from decimal import Decimal
 from django.utils.text import slugify
 from products.models import ProductModel, ProductCategoryModel
-from accounts.models import CustomeUser,UserType
+from accounts.models import CustomUser,UserType
 from pathlib import Path
 from django.core.files import File
 
@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         fake = Faker()
-        user = CustomeUser.objects.get(type=UserType.superuser.value)
+        user = CustomUser.objects.get(type=UserType.superuser.value)
 
         # لیست تصاویر موجود در پوشه images
         image_list = [

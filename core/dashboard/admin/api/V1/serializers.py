@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from order.models import CouponModel
-from accounts.models import Profile,CustomeUser
+from accounts.models import Profile,CustomUser
 
 
 class CouponSerializer(serializers.ModelSerializer):
@@ -30,7 +30,7 @@ class AdminProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomeUser
+        model = CustomUser
     
         fields = [
             "email",

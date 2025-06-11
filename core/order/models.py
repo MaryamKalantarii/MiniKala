@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from decimal import Decimal
-from accounts.models import CustomeUser
+from accounts.models import CustomUser
 
 class OrderStatusType(models.IntegerChoices):
     pending = 1 , "در انتظار پرداخت"
