@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from accounts.models import CustomeUser
+from accounts.models import CustomUser
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from django.shortcuts import get_object_or_404
@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 class UserMiniSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = CustomeUser  
+        model = CustomUser  
         fields = ['id', 'email']
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -33,9 +33,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(max_length=20, write_only=True)
 
     class Meta:
-        model = CustomeUser
+        model = CustomUser
         fields = ["email", "password", "password_confirm"]
-        extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {"password": {"write_only": True},
+                        "password_confrim" : {"write_only : True"}}
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
@@ -52,14 +53,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop("password_confirm")
-        return CustomeUser.objects.create_user(**validated_data)
+        return CustomUser.objects.create_user(**validated_data)
 
 
 class ResendEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(label=("Email"), write_only=True)
 
     def validate(self, attrs):
-        user = get_object_or_404(CustomeUser, email=attrs.get("email"))
+        user = get_object_or_404(CustomUser, email=attrs.get("email"))
         attrs["user"] = user
         return attrs
     
@@ -134,7 +135,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
     def validate_email(self, value):
-        if not CustomeUser.objects.filter(email=value).exists():
+        if not CustomUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("User with this email does not exist.")
         return value
 

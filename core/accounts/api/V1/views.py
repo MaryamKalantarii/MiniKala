@@ -11,7 +11,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.api.V1.tasks import send_email_with_celery
-from accounts.models import CustomeUser
+from accounts.models import CustomUser
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.permissions import IsAuthenticated
 
@@ -33,9 +33,7 @@ class RegistrationView(GenericAPIView):
         serializer = RegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            user = get_object_or_404(
-                CustomeUser, email=serializer.validated_data["email"]
-            )
+            user = serializer.instance
             token = self.get_tokens_for_user(user)
            
             
@@ -48,7 +46,8 @@ class RegistrationView(GenericAPIView):
                 from_email="maryam@admin.com",
                 recipient_list=[user.email]
             )
-            return Response({"detail": "ایمیل ارسال شد. لطفا ایمیل خود را بررسی کنید."})
+            return Response({"detail": "ایمیل ارسال شد. لطفا ایمیل خود را بررسی کنید."},
+                            status = status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -71,16 +70,18 @@ class IsVerifiedView(GenericAPIView):
         try:
             user_data = AccessToken(kwargs.get("token"))
             user_id = user_data["user_id"]
-            user = get_object_or_404(CustomeUser, id=user_id)
+            user = get_object_or_404(CustomUser, id=user_id)
             user.is_verified = True
             user.save()
-            return Response({"detail": "حساب شما با موفقیت تأیید شد"})
+            return Response({"detail": "حساب شما با موفقیت تأیید شد"},
+                            status = status.HTTP_200_OK)
         except:
             return Response(
                 {
                     "detail": "توکن شما ممکن است منقضی شده باشد یا ساختار آن تغییر کند...",
                     "resend email": "http://127.0.0.1:8000/accounts/api/V1/resend",
-                }
+                },
+                status = status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -186,7 +187,7 @@ class PasswordResetRequestView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"]
-        user = CustomeUser.objects.get(email=email)
+        user = CustomUser.objects.get(email=email)
 
 
         token = RefreshToken.for_user(user).access_token
@@ -201,7 +202,8 @@ class PasswordResetRequestView(GenericAPIView):
             recipient_list=[email]
         )
 
-        return Response({"detail": "لینک تغییر رمز عبور به ایمیل شما ارسال شد."})
+        return Response({"detail": "لینک تغییر رمز عبور به ایمیل شما ارسال شد."},
+                        status = status.HTTP_200_OK)
 
 class PasswordResetConfirmView(GenericAPIView):
     """
@@ -230,7 +232,7 @@ class PasswordResetConfirmView(GenericAPIView):
         try:
             user_data = AccessToken(token)
             user_id = user_data["user_id"]
-            user = CustomeUser.objects.get(id=user_id)
+            user = CustomUser.objects.get(id=user_id)
         except Exception:
             return Response({"detail": "توکن نامعتبر یا منقضی شده است."}, status=400)
 
@@ -238,4 +240,5 @@ class PasswordResetConfirmView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)
 
-        return Response({"detail": "رمز عبور با موفقیت بازنشانی شد."})
+        return Response({"detail": "رمز عبور با موفقیت بازنشانی شد."},
+                        status = status.HTTP_200_OK)

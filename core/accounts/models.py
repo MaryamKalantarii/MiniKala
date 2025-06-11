@@ -9,7 +9,7 @@ class UserType(models.IntegerChoices):
     superuser = 3, _("superuser")
 
 
-class CustomeBaseUserManager(BaseUserManager):
+class CustomBaseUserManager(BaseUserManager):
 
     def create_user(self,email,password, **extra_fields):
         if not email:
@@ -25,21 +25,16 @@ class CustomeBaseUserManager(BaseUserManager):
         extra_fields.setdefault("is_verified", True)
         extra_fields.setdefault("type", UserType.superuser.value)
 
-        if extra_fields.get("is_staff") is not True:
-            raise ValueError("Superuser must have is_staff=True.")
-        if extra_fields.get("is_verified") is not True:
-            raise ValueError("Superuser must have is_verified=True.")
-        if extra_fields.get("is_superuser") is not True:
-            raise ValueError("Superuser must have is_superuser=True.")
+       
         return self.create_user(email, password, **extra_fields)
     
-class CustomeUser(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
-    type = models.IntegerField(
+    type_ = models.IntegerField(
         choices=UserType.choices, default=UserType.customer.value)
     
     created_date = models.DateTimeField(auto_now_add=True)
@@ -48,14 +43,14 @@ class CustomeUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    objects = CustomeBaseUserManager()
+    objects = CustomBaseUserManager()
 
     def __str__(self):
         return self.email
     
 
 class Profile(models.Model):
-    user = models.OneToOneField(CustomeUser,on_delete=models.CASCADE ,related_name="user_profile")
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE ,related_name="user_profile")
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     image = models.ImageField(upload_to="profile/",default="profile/default.png")
@@ -64,6 +59,8 @@ class Profile(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     def get_fullname(self):
-        if self.first_name or self.last_name:
+        if self.first_name and self.last_name:
             return self.first_name + " " + self.last_name
-        return "کاربر جدید"
+        else:
+            return None
+            
